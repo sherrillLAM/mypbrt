@@ -30,11 +30,10 @@ class HairShape : public Shape {
 public:
 	// Construct a new HairShape instance
 	HairShape(const Transform *o2w, const Transform *w2o, bool ro, 
-		const string filename, float radius, float angleThreshold);
+		float radius, float angleThreshold);
 	~HairShape();
 	BBox ObjectBound() const;
 	BBox WorldBound() const;
-	void Refine(vector<Reference<Shape> > &refined) const;
 
 	/// Return the list of vertices underlying the hair shape
 	const std::vector<Point> &getVertices() const;
@@ -51,7 +50,7 @@ public:
 	bool CanIntersect() const { return false; }
 	void Refine(vector<Reference<Shape> > &refined) const;
 	bool IntersectP(const Ray &ray) const;
-	BBox ObjectBound() const;
+
 	float Area() const;
 	Point Sample(float u1, float u2, Normal *Ns) const;
 

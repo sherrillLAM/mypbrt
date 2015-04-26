@@ -19,9 +19,13 @@ AttributeBegin
           "float uscale" [4] "float vscale" [4]
           "rgb tex1" [1 0 0] "rgb tex2" [0 0 1]
   Material "matte"
-           "texture Kd" "checks"
+           "color Kd" [1 0 0]
   Shape "cylinder" "float radius" [5] "point p" [-5 -5 -5  0 0 0] 
+  Material "matte"
+           "color Kd" [0 1 0]
   Shape "cylinder" "float radius" [5] "point p" [0 0 0 4 8 4]
+  Material "matte"
+           "color Kd" [0 0 1]
   Shape "cylinder" "float radius" [5] "point p" [4 8 4 6 10 6] 
 AttributeEnd
 
