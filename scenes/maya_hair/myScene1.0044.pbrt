@@ -1,0 +1,54 @@
+Film "image"
+	"integer xresolution" [960]
+	"integer yresolution" [540]
+	"string filename" ["myScene1.0044.tga"]
+
+Sampler "lowdiscrepancy"
+	"integer pixelsamples" [4]
+
+PixelFilter "gaussian"
+	"float xwidth" [2.000000]
+	"float ywidth" [2.000000]
+	"float alpha" [2.000000]
+
+Renderer "sampler"
+	"bool visualizeobjectids" ["false"]
+
+SurfaceIntegrator "directlighting"
+
+Accelerator "bvh"
+	"integer maxnodeprims" [7]
+
+
+Scale -1 1 1
+LookAt 10.120096 -47.885755 13.789925
+	-0.404889 0.794229 7.199082
+	-0.027724 0.128227 0.991357
+
+Camera "perspective"
+	"float fov" [54.432223]
+	"float focaldistance" [50.238982]
+	"float lensradius" [0.000000]
+	"float screenwindow" [-1.000000 1.000000 -0.562500 0.562500]
+	"float shutteropen" [0.000000]
+	"float shutterclose" [1.000000]
+
+
+WorldBegin
+
+# Translated Lambert Material lambert1
+MakeNamedMaterial "lambert1" "string type" ["matte"]
+	 "color Kd" [0.500000 0.500000 0.500000] 
+
+
+        AttributeBegin
+        CoordSysTransform "camera"
+        LightSource "distant" "rgb L" [ .7 .7 .5 ] "point from" [0 0 0] "point to" [1.0 -1.0 1.0]
+        LightSource "distant" "rgb L" [ .2 .2 .35 ] "point from" [0 0 0] "point to" [0.0 0.0 1.0]
+        AttributeEnd
+
+        Include "myScene1.0044.geo.pbrt"
+Include "myScene1.0044.areaLgt.pbrt"
+
+
+WorldEnd
