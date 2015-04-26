@@ -337,6 +337,7 @@ Reference<Shape> MakeShape(const string &name,
 			transformCache.Lookup(curTransform[0], &o2w, &w2o);
 			s = CreateCylinderShape(o2w, w2o, reverseOrientation,
 				paramSet);
+			pbrtConcatTransform1(Inverse(*ObjectToWorld));
 		} else
 			s = CreateCylinderShape(object2world, world2object, reverseOrientation,
 				paramSet);

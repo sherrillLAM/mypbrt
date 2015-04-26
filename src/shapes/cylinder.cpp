@@ -35,6 +35,7 @@
 #include "shapes/cylinder.h"
 #include "paramset.h"
 #include <iostream>
+#include <cstdio>
 
 // Cylinder Method Definitions
 Cylinder::Cylinder(const Transform *o2w, const Transform *w2o, bool ro,
@@ -199,64 +200,20 @@ Cylinder *CreateCylinderShape(const Transform *o2w, const Transform *w2o,
     float zmax = params.FindOneFloat("zmax", 1);
     float phimax = params.FindOneFloat("phimax", 360);
 
-	printf("%f,%f,%f,%f\n", o2w->GetMatrix().m[0][0], o2w->GetMatrix().m[0][1], o2w->GetMatrix().m[0][2], o2w->GetMatrix().m[0][3]);
-	printf("%f,%f,%f,%f\n", o2w->GetMatrix().m[1][0], o2w->GetMatrix().m[1][1], o2w->GetMatrix().m[1][2], o2w->GetMatrix().m[1][3]);
-	printf("%f,%f,%f,%f\n", o2w->GetMatrix().m[2][0], o2w->GetMatrix().m[2][1], o2w->GetMatrix().m[2][2], o2w->GetMatrix().m[2][3]);
-	printf("%f,%f,%f,%f\n\n", o2w->GetMatrix().m[3][0], o2w->GetMatrix().m[3][1], o2w->GetMatrix().m[3][2], o2w->GetMatrix().m[3][3]);
-	
-	//printf("%f,%f,%f,%f\n", w2o->GetInverseMatrix().m[0][0], w2o->GetInverseMatrix().m[0][1], w2o->GetInverseMatrix().m[0][2], w2o->GetInverseMatrix().m[0][3]);
-	//printf("%f,%f,%f,%f\n", w2o->GetInverseMatrix().m[1][0], w2o->GetInverseMatrix().m[1][1], w2o->GetInverseMatrix().m[1][2], w2o->GetInverseMatrix().m[1][3]);
-	//printf("%f,%f,%f,%f\n", w2o->GetInverseMatrix().m[2][0], w2o->GetInverseMatrix().m[2][1], w2o->GetInverseMatrix().m[2][2], w2o->GetInverseMatrix().m[2][3]);
-	//printf("%f,%f,%f,%f\n\n", w2o->GetInverseMatrix().m[3][0], w2o->GetInverseMatrix().m[3][1], w2o->GetInverseMatrix().m[3][2], w2o->GetInverseMatrix().m[3][3]);
-
 	int np1;
 	const Point *p = params.FindPoint("p", &np1);
-
-	Point p1 = (*w2o)(Point(0.0f, 0.0f, zmin));
-	Point p2 = (*w2o)(Point(0.0f, 0.0f, zmax));
-
-	//printf("%f, %f, %f\n", p1.x, p1.y, p1.z);
-	//printf("%f, %f, %f\n", p2.x, p2.y, p2.z);
 
 	if (!p || np1 < 2) {
 		printf("no points input.\n");
 		return new Cylinder(o2w, w2o, reverseOrientation, radius, zmin, zmax, phimax);
 	}
 
+	o2w->Print(stdout);
+
 	Vector rel = p[1] - p[0];
 	float length = rel.Length();
 
-	Transform ObjectToWorld = fromFrame(rel / length) * (*o2w);
-	Transform WorldToObject = Inverse(ObjectToWorld);
-
-	//Point p3 = WorldToObject(p[0]);
-	//Point p4 = WorldToObject(p[1]);
-
-	//printf("%f, %f, %f\n", p3.x, p3.y, p3.z);
-	//printf("%f, %f, %f\n", p4.x, p4.y, p4.z);
-
-	printf("%f,%f,%f,%f\n", ObjectToWorld.GetMatrix().m[0][0], ObjectToWorld.GetMatrix().m[0][1], ObjectToWorld.GetMatrix().m[0][2], ObjectToWorld.GetMatrix().m[0][3]);
-	printf("%f,%f,%f,%f\n", ObjectToWorld.GetMatrix().m[1][0], ObjectToWorld.GetMatrix().m[1][1], ObjectToWorld.GetMatrix().m[1][2], ObjectToWorld.GetMatrix().m[1][3]);
-	printf("%f,%f,%f,%f\n", ObjectToWorld.GetMatrix().m[2][0], ObjectToWorld.GetMatrix().m[2][1], ObjectToWorld.GetMatrix().m[2][2], ObjectToWorld.GetMatrix().m[2][3]);
-	printf("%f,%f,%f,%f\n\n", ObjectToWorld.GetMatrix().m[3][0], ObjectToWorld.GetMatrix().m[3][1], ObjectToWorld.GetMatrix().m[3][2], ObjectToWorld.GetMatrix().m[3][3]);
-
-	//printf("%f,%f,%f,%f\n", WorldToObject.GetMatrix().m[0][0], WorldToObject.GetMatrix().m[0][1], WorldToObject.GetMatrix().m[0][2], WorldToObject.GetMatrix().m[0][3]);
-	//printf("%f,%f,%f,%f\n", WorldToObject.GetMatrix().m[1][0], WorldToObject.GetMatrix().m[1][1], WorldToObject.GetMatrix().m[1][2], WorldToObject.GetMatrix().m[1][3]);
-	//printf("%f,%f,%f,%f\n", WorldToObject.GetMatrix().m[2][0], WorldToObject.GetMatrix().m[2][1], WorldToObject.GetMatrix().m[2][2], WorldToObject.GetMatrix().m[2][3]);
-	//printf("%f,%f,%f,%f\n", WorldToObject.GetMatrix().m[3][0], WorldToObject.GetMatrix().m[3][1], WorldToObject.GetMatrix().m[3][2], WorldToObject.GetMatrix().m[3][3]);
-
-	//printf("%f,%f,%f,%f\n", w2o->GetInverseMatrix().m[0][0], w2o->GetInverseMatrix().m[0][1], w2o->GetInverseMatrix().m[0][2], w2o->GetInverseMatrix().m[0][3]);
-	//printf("%f,%f,%f,%f\n", w2o->GetInverseMatrix().m[1][0], w2o->GetInverseMatrix().m[1][1], w2o->GetInverseMatrix().m[1][2], w2o->GetInverseMatrix().m[1][3]);
-	//printf("%f,%f,%f,%f\n", w2o->GetInverseMatrix().m[2][0], w2o->GetInverseMatrix().m[2][1], w2o->GetInverseMatrix().m[2][2], w2o->GetInverseMatrix().m[2][3]);
-	//printf("%f,%f,%f,%f\n\n", w2o->GetInverseMatrix().m[3][0], w2o->GetInverseMatrix().m[3][1], w2o->GetInverseMatrix().m[3][2], w2o->GetInverseMatrix().m[3][3]);
-
-	//return new Cylinder(&ObjectToWorld, &WorldToObject, reverseOrientation, radius, 0.0f, length, phimax);
-	std::cout << (o2w->GetMatrix() == ObjectToWorld.GetMatrix()) << std::endl;
-	std::cout << (w2o->GetMatrix() == WorldToObject.GetMatrix()) << std::endl;
-
-	//o2w = new Transform(ObjectToWorld.GetMatrix());
-	//w2o = new Transform(WorldToObject.GetMatrix());
-	return new Cylinder(o2w, w2o, reverseOrientation, radius, zmin, zmax, phimax);
+	return new Cylinder(o2w, w2o, reverseOrientation, radius, 0.0f, length, phimax);
 }
 
 
