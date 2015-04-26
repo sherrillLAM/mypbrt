@@ -20,6 +20,6 @@ AttributeBegin
           "rgb tex1" [1 0 0] "rgb tex2" [0 0 1]
   Material "matte"
            "texture Kd" "checks"
-  Shape "cylinder" "float radius" [5] "float zmin" [0] "float zmax" [17.3205] "point p" [0 0 0 1 2 3] 
+  Shape "cylinder" "float radius" [5] "float zmin" [0] "float zmax" [17.3205] "point p" [-3 -2 -1 1 2 3] 
 AttributeEnd
 WorldEnd

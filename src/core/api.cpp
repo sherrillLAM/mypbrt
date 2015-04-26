@@ -331,9 +331,9 @@ Reference<Shape> MakeShape(const string &name,
 			Vector rel = p[1] - p[0];
 			float length = rel.Length();
 
-			Transform ObjectToWorld = fromFrame(rel / length);
+			Transform *ObjectToWorld = new Transform((Translate(Vector(p[0])) * fromFrame(rel / length)).GetMatrix());
 			Transform * o2w, *w2o;
-			pbrtConcatTransform1(ObjectToWorld);
+			pbrtConcatTransform1(*ObjectToWorld);
 			transformCache.Lookup(curTransform[0], &o2w, &w2o);
 			s = CreateCylinderShape(o2w, w2o, reverseOrientation,
 				paramSet);
