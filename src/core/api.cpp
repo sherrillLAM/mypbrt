@@ -376,10 +376,18 @@ Reference<Shape> MakeShape(const string &name,
 		printf("find p: %d, %d\n", np, nsp);
 		
 		vector<Reference<Shape> > cylinders;
+		float current_r = radius;
 		
-		if (p && np >= 2 && nsp == np) {
+		if (p && np >= 2) {
+			int j = 0;
+			if (startP && startP[j] == 0) j++;
+
 			for (int i = 0; i < np - 1; i++) {
-				if (startP[i + 1] == 1) continue;
+				if (startP && j < nsp && startP[j] == i + 1) {
+					current_r = radius;
+					j++;
+					continue;
+				}
 
 				Vector rel = p[i+1] - p[i];
 				printf("%f,%f,%f\n", p[i].x, p[i].y, p[i].z);
@@ -390,12 +398,12 @@ Reference<Shape> MakeShape(const string &name,
 				Transform *o2w, *w2o;
 				pbrtConcatTransform1(*ObjectToWorld);
 				transformCache.Lookup(curTransform[0], &o2w, &w2o);
-				Cylinder *c = new Cylinder(o2w, w2o, reverseOrientation, radius, 0.0f, length, 360);
+				Cylinder *c = new Cylinder(o2w, w2o, reverseOrientation, current_r, -0.1f * length, length, 360);
 				cylinders.push_back(c);
 				pbrtConcatTransform1(Inverse(*ObjectToWorld));
+				current_r -= 0.05 * radius;
 			}
 			printf("vector size: %d\n", cylinders.size());
-			delete[] p;
 		}
 		s = CreateHairShape(object2world, world2object, reverseOrientation,
 			cylinders);
