@@ -225,3 +225,9 @@ Point Cylinder::Sample(float u1, float u2, Normal *Ns) const {
     if (ReverseOrientation) *Ns *= -1.f;
     return (*ObjectToWorld)(p);
 }
+
+void Cylinder::printShape() const {
+	printf("shape: Cylinder\n");
+	printf("attr: %f, %f, %f, %f\n", radius, zmin, zmax, phiMax);
+	fflush(stdout);
+}

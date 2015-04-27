@@ -14,15 +14,12 @@
 */
 
 HairShape::HairShape(const Transform *o2w, const Transform *w2o, bool ro,
-	vector<Cylinder*> &cys, float r)
+	const vector<Reference<Shape> > &cys)
 	: Shape(o2w, w2o, ro) {
 	cylinders = cys;
-	radius = r;
 }
 
 HairShape::~HairShape() {
-	for (int i = 0; i < cylinders.size(); i++)
-		delete cylinders[i];
 	cylinders.clear();
 }
 
@@ -40,20 +37,17 @@ BBox HairShape::WorldBound() const {
 	return worldBounds;
 }
 
-bool HairShape::Intersect(const Ray &ray, float *tHit, float *rayEpsilon,
-	DifferentialGeometry *dg) const {
-	return false;
-}
-
-bool HairShape::IntersectP(const Ray &ray) const {
-	return false;
-}
-
-Point HairShape::Sample(float u1, float u2, Normal *Ns) const {
-	return Point(0,0,0);
+void HairShape::Refine(vector<Reference<Shape> > &refined) const {
+	refined = cylinders;
 }
 
 HairShape *CreateHairShape(const Transform *o2w, const Transform *w2o,
-	bool reverseOrientation, vector<Cylinder *> cys, float r) {
-	return new HairShape(o2w, w2o, reverseOrientation, cys, r);
+	bool reverseOrientation, const vector<Reference<Shape> > &cys) {
+	return new HairShape(o2w, w2o, reverseOrientation, cys);
+}
+
+void HairShape::printShape() const {
+	printf("shape: Hair\n");
+	printf("num of cylinders: %d\n", cylinders.size());
+	fflush(stdout);
 }

@@ -20,23 +20,21 @@ class HairShape : public Shape {
 public:
 	// Construct a new HairShape instance
 	HairShape(const Transform *o2w, const Transform *w2o, bool ro, 
-		vector<Cylinder*> &cylinders, float radius);
+		const vector<Reference<Shape> > &cylinders);
 	~HairShape();
 	BBox ObjectBound() const;
 	BBox WorldBound() const;
 
-	bool Intersect(const Ray &ray, float *tHit, float *rayEpsilon,
-		DifferentialGeometry *dg) const;
-	bool IntersectP(const Ray &ray) const;
-
-	Point Sample(float u1, float u2, Normal *Ns) const;
+	bool CanIntersect() const { return false; }
+	void Refine(vector<Reference<Shape> > &refined) const;
+	void printShape() const;
+	friend class Cylinder;
 
 protected:
-	vector<Cylinder*> cylinders;
-	float radius;
+	vector<Reference<Shape> > cylinders;
 };
 
 HairShape *CreateHairShape(const Transform *o2w, const Transform *w2o,
-	bool reverseOrientation, vector<Cylinder*> cylinders, float radius);
+	bool reverseOrientation, const vector<Reference<Shape> > &cylinders);
 
 #endif /* PBRT_SHAPES_HAIR_H */

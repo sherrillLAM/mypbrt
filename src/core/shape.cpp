@@ -98,4 +98,7 @@ float Shape::Pdf(const Point &p, const Vector &wi) const {
     return pdf;
 }
 
+void Shape::printShape() const {
+	Severe("Unimplemented Shape::printShape() method called");
+}
 

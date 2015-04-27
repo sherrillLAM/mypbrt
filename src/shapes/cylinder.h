@@ -51,6 +51,8 @@ public:
     bool IntersectP(const Ray &ray) const;
     float Area() const;
     Point Sample(float u1, float u2, Normal *Ns) const;
+	void printShape() const;
+
 protected:
     // Cylinder Private Data
     float radius, zmin, zmax, phiMax;

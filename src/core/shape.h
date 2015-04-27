@@ -74,6 +74,7 @@ public:
         return Sample(u1, u2, Ns);
     }
     virtual float Pdf(const Point &p, const Vector &wi) const;
+	virtual void printShape() const;
 
     // Shape Public Data
     const Transform *ObjectToWorld, *WorldToObject;

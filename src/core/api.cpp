@@ -370,9 +370,13 @@ Reference<Shape> MakeShape(const string &name,
 	else if (name == "hair") {
 		int np, nsp;
 		const Point *p = paramSet.FindPoint("p", &np);
-		const int * startP = paramSet.FindInt("startP", &nsp);
-		vector<Cylinder*> cylinders;
+		const int *startP = paramSet.FindInt("startP", &nsp);
+		float radius = paramSet.FindOneFloat("radius", 1);
+		printf("radius: %f\n", radius);
 		printf("find p: %d, %d\n", np, nsp);
+		
+		vector<Reference<Shape> > cylinders;
+		
 		if (p && np >= 2 && nsp == np) {
 			for (int i = 0; i < np - 1; i++) {
 				if (startP[i + 1] == 1) continue;
@@ -383,21 +387,18 @@ Reference<Shape> MakeShape(const string &name,
 				float length = rel.Length();
 
 				Transform *ObjectToWorld = new Transform((Translate(Vector(p[i])) * fromFrame(rel / length)).GetMatrix());
-				Transform * o2w, *w2o;
+				Transform *o2w, *w2o;
 				pbrtConcatTransform1(*ObjectToWorld);
 				transformCache.Lookup(curTransform[0], &o2w, &w2o);
-				Cylinder* c = CreateCylinderShape(o2w, w2o, reverseOrientation,
-					paramSet);
+				Cylinder *c = new Cylinder(o2w, w2o, reverseOrientation, radius, 0.0f, length, 360);
 				cylinders.push_back(c);
 				pbrtConcatTransform1(Inverse(*ObjectToWorld));
 			}
 			printf("vector size: %d\n", cylinders.size());
 			delete[] p;
 		}
-		float radius = paramSet.FindOneFloat("radius", 1);
-		printf("radius: %f\n", radius);
 		s = CreateHairShape(object2world, world2object, reverseOrientation,
-			cylinders, radius);
+			cylinders);
 	}
     else
         Warning("Shape \"%s\" unknown.", name.c_str());

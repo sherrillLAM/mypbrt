@@ -21,8 +21,8 @@ AttributeBegin
   Material "matte"
            "color Kd" [1 0 0]
   Shape "hair" "float radius" [3] 
-      "point p" [0 0 0 1 1 1 2 2 2 3 3 3 4 4 4 5 5 5] 
-      "integer startP" [1 0 1 0 0 0]
+      "point p" [0 0 0 1 1 1 2 2 2 3 3 3] 
+      "integer startP" [1 0 1 0 ]
   #Shape "cylinder" "float radius" [5] "point p" [-5 -5 -5  0 0 0] 
   #Material "matte"
   #         "color Kd" [0 1 0]
