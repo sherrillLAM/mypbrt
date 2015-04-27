@@ -260,6 +260,7 @@
     <ClInclude Include="..\shapes\cone.h" />
     <ClInclude Include="..\shapes\cylinder.h" />
     <ClInclude Include="..\shapes\disk.h" />
+    <ClInclude Include="..\shapes\hair.h" />
     <ClInclude Include="..\shapes\heightfield.h" />
     <ClInclude Include="..\shapes\hyperboloid.h" />
     <ClInclude Include="..\shapes\loopsubdiv.h" />
@@ -1221,6 +1222,7 @@
     <ClCompile Include="..\shapes\cone.cpp" />
     <ClCompile Include="..\shapes\cylinder.cpp" />
     <ClCompile Include="..\shapes\disk.cpp" />
+    <ClCompile Include="..\shapes\hair.cpp" />
     <ClCompile Include="..\shapes\heightfield.cpp" />
     <ClCompile Include="..\shapes\hyperboloid.cpp" />
     <ClCompile Include="..\shapes\loopsubdiv.cpp" />

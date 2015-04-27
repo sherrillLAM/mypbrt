@@ -208,7 +208,7 @@ Cylinder *CreateCylinderShape(const Transform *o2w, const Transform *w2o,
 		return new Cylinder(o2w, w2o, reverseOrientation, radius, zmin, zmax, phimax);
 	}
 
-	o2w->Print(stdout);
+	//o2w->Print(stdout);
 
 	Vector rel = p[1] - p[0];
 	float length = rel.Length();

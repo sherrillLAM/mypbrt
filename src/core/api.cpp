@@ -109,6 +109,7 @@
 #include "shapes/paraboloid.h"
 #include "shapes/sphere.h"
 #include "shapes/trianglemesh.h"
+#include "shapes/hair.h"
 #include "textures/bilerp.h"
 #include "textures/checkerboard.h"
 #include "textures/constant.h"
@@ -366,6 +367,38 @@ Reference<Shape> MakeShape(const string &name,
     else if (name == "nurbs")
         s = CreateNURBSShape(object2world, world2object, reverseOrientation,
                              paramSet);
+	else if (name == "hair") {
+		int np, nsp;
+		const Point *p = paramSet.FindPoint("p", &np);
+		const int * startP = paramSet.FindInt("startP", &nsp);
+		vector<Cylinder*> cylinders;
+		printf("find p: %d, %d\n", np, nsp);
+		if (p && np >= 2 && nsp == np) {
+			for (int i = 0; i < np - 1; i++) {
+				if (startP[i + 1] == 1) continue;
+
+				Vector rel = p[i+1] - p[i];
+				printf("%f,%f,%f\n", p[i].x, p[i].y, p[i].z);
+				printf("%f,%f,%f\n", p[i+1].x, p[i+1].y, p[i+1].z);
+				float length = rel.Length();
+
+				Transform *ObjectToWorld = new Transform((Translate(Vector(p[i])) * fromFrame(rel / length)).GetMatrix());
+				Transform * o2w, *w2o;
+				pbrtConcatTransform1(*ObjectToWorld);
+				transformCache.Lookup(curTransform[0], &o2w, &w2o);
+				Cylinder* c = CreateCylinderShape(o2w, w2o, reverseOrientation,
+					paramSet);
+				cylinders.push_back(c);
+				pbrtConcatTransform1(Inverse(*ObjectToWorld));
+			}
+			printf("vector size: %d\n", cylinders.size());
+			delete[] p;
+		}
+		float radius = paramSet.FindOneFloat("radius", 1);
+		printf("radius: %f\n", radius);
+		s = CreateHairShape(object2world, world2object, reverseOrientation,
+			cylinders, radius);
+	}
     else
         Warning("Shape \"%s\" unknown.", name.c_str());
     paramSet.ReportUnused();
