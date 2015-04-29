@@ -2,7 +2,7 @@
 #pragma once
 #endif
 
-#if !defined(PBRT_SHAPES_HAIR_H)
+#ifndef PBRT_SHAPES_HAIR_H
 #define PBRT_SHAPES_HAIR_H
 
 // shapes/hair.h*

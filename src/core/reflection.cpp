@@ -653,4 +653,15 @@ Spectrum BSDF::rho(const Vector &wo, RNG &rng, BxDFType flags,
     return ret;
 }
 
+Spectrum KajiyaKayBSDF::f(const Vector &Wo, const Vector &Wi) const {
+	Vector wo = Wo, wi = Wi;
+	float woCosTheta = CosTheta(wo), wiCosTheta = CosTheta(wi);
+	float woSinTheta = SinTheta(wo), wiSinTheta = SinTheta(wi);
 
+	float result = powf((woCosTheta*wiCosTheta - woSinTheta*wiSinTheta), exponent) / wiCosTheta;
+	return Kd + Ks * result;
+}
+
+float KajiyaKayBSDF::Pdf(const Vector &wi, const Vector &wo) const {
+	return 1 / (4 * M_PI);
+}

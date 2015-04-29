@@ -137,10 +137,10 @@ bool GeometricPrimitive::IntersectP(const Ray &r) const {
 
 
 bool GeometricPrimitive::CanIntersect() const {
-	printf("==============inside canIntersect==============\n");
+	//printf("==============inside canIntersect==============\n");
 	//printf("shapeId: %d\n", shape);
-	shape->printShape();
-	printf("================after printShape===============\n");
+	//shape->printShape();
+	//printf("================after printShape===============\n");
     return shape->CanIntersect();
 }
 

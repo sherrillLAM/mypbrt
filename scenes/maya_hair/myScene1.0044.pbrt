@@ -1,7 +1,7 @@
 Film "image"
 	"integer xresolution" [960]
 	"integer yresolution" [540]
-	"string filename" ["myScene1.0044.tga"]
+	"string filename" ["../scenes/maya_hair/myScene1.0044.tga"]
 
 Sampler "lowdiscrepancy"
 	"integer pixelsamples" [4]

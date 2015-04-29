@@ -915,6 +915,9 @@
     <ClInclude Include="..\shapes\hair.h">
       <Filter>Header Files\shapes</Filter>
     </ClInclude>
+    <ClInclude Include="..\materials\hair_m.h">
+      <Filter>Header Files\materials</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\3rdparty\ilmbase-1.0.2\half.cpp">
@@ -1687,6 +1690,9 @@
     </ClCompile>
     <ClCompile Include="..\shapes\hair.cpp">
       <Filter>Source Files\shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\materials\hair_m.cpp">
+      <Filter>Source Files\materials</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

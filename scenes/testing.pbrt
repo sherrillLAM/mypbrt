@@ -2,7 +2,7 @@ LookAt 0 10 100   0 -1 0 0 1 0
 Camera "perspective" "float fov" [30]
 PixelFilter "mitchell" "float xwidth" [2] "float ywidth" [2]
 Sampler "bestcandidate"
-Film "image" "string filename" ["C:\\pbrt-v2-master\\scenes\\simple.tga"]
+Film "image" "string filename" ["../scenes/testing.tga"]
      "integer xresolution" [200] "integer yresolution" [200]
 
 WorldBegin
@@ -14,22 +14,76 @@ AttributeBegin
 AttributeEnd
 
 AttributeBegin
-  Rotate 0 1 0 0
-  Texture "checks" "spectrum" "checkerboard"
-          "float uscale" [4] "float vscale" [4]
-          "rgb tex1" [1 0 0] "rgb tex2" [0 0 1]
+  Translate 0 10 0
+  Rotate -90 1 0 0
+  Translate 5 0 0
   Material "matte"
-           "color Kd" [1 0 0]
-  Shape "hair" "float radius" [3] 
-      "point p" [0 0 0 1 1 1 2 2 2 3 3 3 4 4 4 5 5 5 6 6 6] 
-      "integer startP" [2 4]
-  #Shape "cylinder" "float radius" [5] "point p" [-5 -5 -5  0 0 0] 
-  #Material "matte"
-  #         "color Kd" [0 1 0]
-  #Shape "cylinder" "float radius" [5] "point p" [0 0 0 4 8 4]
-  #Material "matte"
-  #         "color Kd" [0 0 1]
-  #Shape "cylinder" "float radius" [5] "point p" [4 8 4 6 10 6] 
+           "color Kd" [0.6 0.45 0.2]
+  Shape "hair" "float radius" [0.1] 
+      "point p" 
+        [ 
+    0 0 0  
+    5 0 -3 
+    8 0 -6  
+    9 0 -9 
+    10 0 -12  
+    10.75 0 -15  
+    12.6 0 -21
+    12.7 0 -24
+    12.75 0 -27
+    12.8 0 -35
+    
+    .75 0 0  
+    5.75 0 -3 
+    8.75 0 -6  
+    9.75 0 -9 
+    10.75 0 -12  
+    11.25 0 -15  
+    13.35 0 -21
+    13.45 0 -24
+    13.5 0 -27
+    13.75 0 -35
+        ] 
+  "integer startP" [10]
+  "integer clump" [30]
+AttributeEnd
+
+AttributeBegin
+  Translate 0 10 0
+  Rotate -90 1 0 0
+  Rotate 180 0 0 1 
+  Translate 5 0 0
+  Material "hair"
+           "color Kd" [0.6 0.45 0.2]
+           "color Ks" [0.6 0.45 0.2]
+     "float roughness" [1]
+  Shape "hair" "float radius" [0.1] 
+      "point p" 
+        [ 
+    0 0 0  
+    5 0 -3 
+    8 0 -6  
+    9 0 -9 
+    10 0 -12  
+    10.75 0 -15  
+    12.6 0 -21
+    12.7 0 -24
+    12.75 0 -27
+    12.8 0 -35
+    
+    .75 0 0  
+    5.75 0 -3 
+    8.75 0 -6  
+    9.75 0 -9 
+    10.75 0 -12  
+    11.25 0 -15  
+    13.35 0 -21
+    13.45 0 -24
+    13.5 0 -27
+    13.75 0 -35
+        ] 
+  "integer startP" [10]
+  "integer clump" [30]
 AttributeEnd
 
 WorldEnd

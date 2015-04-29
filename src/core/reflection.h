@@ -503,7 +503,18 @@ private:
     const uint32_t nThetaH, nThetaD, nPhiD;
 };
 
-
+class KajiyaKayBSDF : public BxDF {
+public:
+	// KajiyaKayBSDF Public Methods
+	KajiyaKayBSDF(const Spectrum &kd, const Spectrum &ks, const float p)
+		: BxDF(BxDFType(BSDF_REFLECTION | BSDF_GLOSSY)), Kd(kd), Ks(ks), exponent(p) { }
+	Spectrum f(const Vector &wo, const Vector &wi) const;
+	float Pdf(const Vector &wi, const Vector &wo) const;
+private:
+	// KajiyaKayBSDF Private Data
+	const Spectrum Kd, Ks;
+	const float exponent;
+};
 
 // BSSRDF Declarations
 class BSSRDF {
