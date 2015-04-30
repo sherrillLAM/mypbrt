@@ -154,16 +154,31 @@ Transform Translate(const Vector &delta) {
     return Transform(m, minv);
 }
 
-Transform fromFrame(const Vector &n) {
+Transform fromFrame(const Vector &n, const char axis) {
 	Vector s, t;
 	CoordinateSystem(n, &t, &s);
 	
-	Matrix4x4 result(
-		-s.x, t.x, n.x, 0,
-		s.y, t.y, n.y, 0,
-		s.z, t.z, n.z, 0,
-		0, 0, 0, 1
-		);
+	Matrix4x4 result;
+	switch (axis) {
+	case 'x':
+		result = Matrix4x4(
+			n.x, s.x, t.x, 0,
+			n.y, s.y, t.y, 0,
+			n.z, s.z, t.z, 0,
+			0, 0, 0, 1
+			);
+		break;
+	case 'y':
+		break;
+	case 'z':
+		result = Matrix4x4(
+			-s.x, t.x, n.x, 0,
+			s.y, t.y, n.y, 0,
+			s.z, t.z, n.z, 0,
+			0, 0, 0, 1
+			);
+	}
+
 	/* The matrix is orthonormal */
 	Matrix4x4 transp = Transpose(result);
 	return Transform(result, transp);

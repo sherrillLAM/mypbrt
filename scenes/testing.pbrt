@@ -4,8 +4,12 @@ PixelFilter "mitchell" "float xwidth" [2] "float ywidth" [2]
 Sampler "bestcandidate"
 Film "image" "string filename" ["../scenes/testing.tga"]
      "integer xresolution" [200] "integer yresolution" [200]
+#VolumeIntegrator "single" "float stepsize" [0.5]
+SurfaceIntegrator "hairscattering" "integer maxdepth" [5]
+    "string strategy" "one"
 
 WorldBegin
+
 AttributeBegin
   CoordSysTransform "camera"
   LightSource "distant"
@@ -17,7 +21,7 @@ AttributeBegin
   Translate 0 10 0
   Rotate -90 1 0 0
   Translate 5 0 0
-  Material "matte"
+  Material "translucent"
            "color Kd" [0.6 0.45 0.2]
   Shape "hair" "float radius" [0.1] 
       "point p" 
@@ -55,8 +59,8 @@ AttributeBegin
   Translate 5 0 0
   Material "hair"
            "color Kd" [0.6 0.45 0.2]
-           "color Ks" [0.6 0.45 0.2]
-     "float roughness" [1]
+           "color Ks" [0.4 0.4 0.4]
+     "float roughness" [4]
   Shape "hair" "float radius" [0.1] 
       "point p" 
         [ 

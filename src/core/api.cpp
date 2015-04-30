@@ -67,6 +67,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "integrators/single.h"
 #include "integrators/useprobes.h"
 #include "integrators/whitted.h"
+#include "integrators/hairscattering.h"
 #include "lights/diffuse.h"
 #include "lights/distant.h"
 #include "lights/goniometric.h"
@@ -332,7 +333,7 @@ Reference<Shape> MakeShape(const string &name,
 			Vector rel = p[1] - p[0];
 			float length = rel.Length();
 
-			Transform *ObjectToWorld = new Transform((Translate(Vector(p[0])) * fromFrame(rel / length)).GetMatrix());
+			Transform *ObjectToWorld = new Transform((Translate(Vector(p[0])) * fromFrame(rel / length, 'z')).GetMatrix());
 			Transform * o2w, *w2o;
 			pbrtConcatTransform1(*ObjectToWorld);
 			transformCache.Lookup(curTransform[0], &o2w, &w2o);
@@ -416,11 +417,11 @@ Reference<Shape> MakeShape(const string &name,
 					//		printf("%f,%f,%f\n", p[i+1].x, p[i+1].y, p[i+1].z);
 					float length = rel.Length();
 
-					Transform *ObjectToWorld = new Transform((Translate(Vector(p[i])) * fromFrame(rel / length)).GetMatrix());
+					Transform *ObjectToWorld = new Transform((Translate(Vector(p[i])) * fromFrame(rel / length, 'z')).GetMatrix());
 					Transform *o2w, *w2o;
 					pbrtConcatTransform1(*ObjectToWorld);
 					transformCache.Lookup(curTransform[0], &o2w, &w2o);
-					Cylinder *c = new Cylinder(o2w, w2o, reverseOrientation, current_r, -0.1f * length, length, 360);
+					Cylinder *c = new Cylinder(o2w, w2o, reverseOrientation, current_r, rel, 360);
 					cylinders.push_back(c);
 					pbrtConcatTransform1(Inverse(*ObjectToWorld));
 					current_r -= 0.05 * radius;
@@ -639,6 +640,8 @@ SurfaceIntegrator *MakeSurfaceIntegrator(const string &name,
 		si = CreateDiffusePRTIntegratorSurfaceIntegrator(paramSet);
 	else if (name == "glossyprt")
 		si = CreateGlossyPRTIntegratorSurfaceIntegrator(paramSet);
+	else if (name == "hairscattering")
+		si = CreateHairScatteringIntegrator(paramSet);
 	else
 		Warning("Surface integrator \"%s\" unknown.", name.c_str());
 
