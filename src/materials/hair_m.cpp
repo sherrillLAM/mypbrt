@@ -42,6 +42,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 BSDF *HairMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 	const DifferentialGeometry &dgShading,
 	MemoryArena &arena) const {
+
 	// Allocate _BSDF_, possibly doing bump mapping with _bumpMap_
 	DifferentialGeometry dgs;
 	if (bumpMap)
@@ -50,14 +51,36 @@ BSDF *HairMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 		dgs = dgShading;
 	BSDF *bsdf = BSDF_ALLOC(arena, BSDF)(dgs, dgGeom.nn);
 
+	float ior = 1.5f;
+	Spectrum r = reflect->Evaluate(dgs).Clamp();
+	Spectrum t = transmit->Evaluate(dgs).Clamp();
+	if (r.IsBlack() && t.IsBlack()) return bsdf;
+
 	// Evaluate textures for _HairMaterial_ material and allocate BRDF
 
 	Spectrum kd = Kd->Evaluate(dgs).Clamp();
 	Spectrum ks = Ks->Evaluate(dgs).Clamp();
 	float rough = roughness->Evaluate(dgs);
-
 	if (!kd.IsBlack() && !ks.IsBlack()) {
-		bsdf->Add(BSDF_ALLOC(arena, KajiyaKayBSDF)(kd, ks, rough));
+		if (!r.IsBlack()) bsdf->Add(BSDF_ALLOC(arena, KajiyaKayBSDF)(r * kd, r * ks, rough));
+	}
+
+	if (!kd.IsBlack()) {
+		if (!t.IsBlack()) bsdf->Add(BSDF_ALLOC(arena, BRDFToBTDF)(BSDF_ALLOC(arena, Lambertian)(t * kd)));
+	}
+
+	if (!ks.IsBlack()) {
+		float rough = roughness->Evaluate(dgs);
+		if (!r.IsBlack()) {
+			Fresnel *fresnel = BSDF_ALLOC(arena, FresnelDielectric)(ior, 1.f);
+			bsdf->Add(BSDF_ALLOC(arena, Microfacet)(r * ks, fresnel,
+				BSDF_ALLOC(arena, Blinn)(1.f / rough)));
+		}
+		if (!t.IsBlack()) {
+			Fresnel *fresnel = BSDF_ALLOC(arena, FresnelDielectric)(ior, 1.f);
+			bsdf->Add(BSDF_ALLOC(arena, BRDFToBTDF)(BSDF_ALLOC(arena, Microfacet)(t * ks, fresnel,
+				BSDF_ALLOC(arena, Blinn)(1.f / rough))));
+		}
 	}
 
 	return bsdf;
@@ -68,6 +91,8 @@ HairMaterial *CreateHairMaterial(const Transform &xform,
 	Reference<Texture<Spectrum> > Kd = mp.GetSpectrumTexture("Kd", Spectrum(0.5f));
 	Reference<Texture<Spectrum> > Ks = mp.GetSpectrumTexture("Ks", Spectrum(0.5f));
 	Reference<Texture<float> > roughness = mp.GetFloatTexture("roughness", 0.5f);
+	Reference<Texture<Spectrum> > reflect = mp.GetSpectrumTexture("reflect", Spectrum(0.5f));
+	Reference<Texture<Spectrum> > transmit = mp.GetSpectrumTexture("transmit", Spectrum(0.5f));
 	Reference<Texture<float> > bumpMap = mp.GetFloatTextureOrNull("bumpmap");
-	return new HairMaterial(Kd, Ks, roughness, bumpMap);
+	return new HairMaterial(Kd, Ks, roughness, reflect, transmit, bumpMap);
 }

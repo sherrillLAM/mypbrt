@@ -80,7 +80,7 @@ void HairScattering::RequestSamples(Sampler *sampler,
 
 
 Spectrum HairScattering::Li(const Scene *scene,
-        const Renderer *renderer, const RayDifferential &ray,
+        const Renderer *renderer, const RayDifferential &r,
         const Intersection &isect, const Sample *sample, RNG &rng, MemoryArena &arena) const {
     Spectrum L(0.f);
     // Evaluate BSDF at hit point
@@ -88,12 +88,12 @@ Spectrum HairScattering::Li(const Scene *scene,
 	Vector tangent = c_shape->GetTangent();
 	Transform t = fromFrame(tangent, 'x');
 
-	RayDifferential newRay = ray;
-	newRay.d = t(ray.d);
+	RayDifferential ray(r);
+	ray.d = t(r.d);
 
-	BSDF *bsdf = isect.GetBSDF(newRay, arena);
+	BSDF *bsdf = isect.GetBSDF(ray, arena);
 
-	Vector wo = -newRay.d;
+	Vector wo = -ray.d;
     const Point &p = bsdf->dgShading.p;
     const Normal &n = bsdf->dgShading.nn;
     // Compute emitted light if ray hit an area light source
@@ -105,22 +105,22 @@ Spectrum HairScattering::Li(const Scene *scene,
         switch (strategy) {
             case SAMPLE_ALL_UNIFORM:
                 L += UniformSampleAllLights(scene, renderer, arena, p, n, wo,
-					isect.rayEpsilon, newRay.time, bsdf, sample, rng,
+					isect.rayEpsilon, ray.time, bsdf, sample, rng,
                     lightSampleOffsets, bsdfSampleOffsets);
                 break;
             case SAMPLE_ONE_UNIFORM:
                 L += UniformSampleOneLight(scene, renderer, arena, p, n, wo,
-					isect.rayEpsilon, newRay.time, bsdf, sample, rng,
+					isect.rayEpsilon, ray.time, bsdf, sample, rng,
                     lightNumOffset, lightSampleOffsets, bsdfSampleOffsets);
                 break;
         }
     }
-	if (newRay.depth + 1 < maxDepth) {
+	if (ray.depth + 1 < maxDepth) {
         Vector wi;
         // Trace rays for specular reflection and refraction
-		L += SpecularReflect(newRay, bsdf, rng, isect, renderer, scene, sample,
+		L += SpecularReflect(ray, bsdf, rng, isect, renderer, scene, sample,
                              arena);
-		L += SpecularTransmit(newRay, bsdf, rng, isect, renderer, scene, sample,
+		L += SpecularTransmit(ray, bsdf, rng, isect, renderer, scene, sample,
                               arena);
     }
     return L;

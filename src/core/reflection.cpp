@@ -659,6 +659,7 @@ Spectrum KajiyaKayBSDF::f(const Vector &Wo, const Vector &Wi) const {
 	float woSinTheta = SinTheta(wo), wiSinTheta = SinTheta(wi);
 
 	float wowiCosTheta = woCosTheta * wiCosTheta + woSinTheta * wiSinTheta;
+	wowiCosTheta = max(0.f, wowiCosTheta);
 	return Kd + Ks * powf(wowiCosTheta, exponent) / wiCosTheta;
 }
 
