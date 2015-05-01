@@ -666,3 +666,44 @@ Spectrum KajiyaKayBSDF::f(const Vector &Wo, const Vector &Wi) const {
 float KajiyaKayBSDF::Pdf(const Vector &wi, const Vector &wo) const {
 	return 1 / (4 * M_PI);
 }
+
+Spectrum GoldmanBSDF::f(const Vector &Wo, const Vector &Wi) const {
+	Vector wo = Wo, wi = Wi;
+	float woCosTheta = CosTheta(wo), wiCosTheta = CosTheta(wi);
+	float woSinTheta = SinTheta(wo), wiSinTheta = SinTheta(wi);
+	float wowiCosTheta = woCosTheta * wiCosTheta + woSinTheta * wiSinTheta;
+	wowiCosTheta = max(0.f, wowiCosTheta);
+	Spectrum f_kk = Kd + Ks * powf(wowiCosTheta, exponent) / wiCosTheta;
+
+	float woCosPhi = CosPhi(wo), wiCosPhi = CosPhi(wi);
+	float woSinPhi = SinPhi(wo), wiSinPhi = SinPhi(wi);
+	float k = max(0.f, woCosPhi * wiCosPhi + woSinPhi * wiSinPhi);
+	Spectrum n_goldman = rho_r * (1 + k) / 2 + rho_t * (1 - k) / 2;
+
+	return f_kk * n_goldman;
+}
+
+float GoldmanBSDF::Pdf(const Vector &wi, const Vector &wo) const {
+	return 1 / (4 * M_PI);
+}
+
+Spectrum KimBSDF::f(const Vector &Wo, const Vector &Wi) const {
+	Vector wo = Wo, wi = Wi;
+	float woCosTheta = CosTheta(wo), wiCosTheta = CosTheta(wi);
+	float woSinTheta = SinTheta(wo), wiSinTheta = SinTheta(wi);
+	float wowiCosTheta = woCosTheta * wiCosTheta + woSinTheta * wiSinTheta;
+	wowiCosTheta = max(0.f, wowiCosTheta);
+	Spectrum f_kk = Kd + Ks * powf(wowiCosTheta, exponent) / wiCosTheta;
+
+	float woCosPhi = CosPhi(wo), wiCosPhi = CosPhi(wi);
+	float woSinPhi = SinPhi(wo), wiSinPhi = SinPhi(wi);
+	float wowiCosPhi = max(0.f, woCosPhi * wiCosPhi + woSinPhi * wiSinPhi);
+	float half_wowiCosPhi = sqrt((wowiCosPhi + 1) / 2);
+	Spectrum n_goldman = rho_r * (1 + k) / 2 + rho_t * (1 - k) / 2;
+
+	return f_kk * n_goldman;
+}
+
+float KimBSDF::Pdf(const Vector &wi, const Vector &wo) const {
+	return 1 / (4 * M_PI);
+}

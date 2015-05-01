@@ -516,6 +516,35 @@ private:
 	const float exponent;
 };
 
+class GoldmanBSDF : public BxDF {
+public:
+	// GoldmanBSDF Public Methods
+	GoldmanBSDF(const Spectrum &kd, const Spectrum &ks, const float p, const Spectrum rr, const Spectrum rt)
+		: BxDF(BxDFType(BSDF_REFLECTION | BSDF_GLOSSY)), Kd(kd), Ks(ks), exponent(p), rho_r(rr), rho_t(rt) {}
+	Spectrum f(const Vector &wo, const Vector &wi) const;
+	float Pdf(const Vector &wi, const Vector &wo) const;
+private:
+	// GoldmanBSDF Private Data
+	const Spectrum Kd, Ks;
+	const float exponent;
+	const Spectrum rho_r, rho_t; // within[0, 1]
+};
+
+class KimBSDF : public BxDF {
+public:
+	// KimBSDF Public Methods
+	KimBSDF(const Spectrum &kd, const Spectrum &ks, const float p, const Spectrum rr, const Spectrum rt, const float K)
+		: BxDF(BxDFType(BSDF_REFLECTION | BSDF_GLOSSY)), Kd(kd), Ks(ks), exponent(p), 
+		rho_r(rr), rho_t(rt), k(K) {}
+	Spectrum f(const Vector &wo, const Vector &wi) const;
+	float Pdf(const Vector &wi, const Vector &wo) const;
+private:
+	// KimBSDF Private Data
+	const Spectrum Kd, Ks;
+	const float exponent, k;
+	const Spectrum rho_r, rho_t; // within[0, 1]
+};
+
 // BSSRDF Declarations
 class BSSRDF {
 public:

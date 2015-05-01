@@ -49,9 +49,12 @@ public:
 		Reference<Texture<float> > roughness,
 		Reference<Texture<Spectrum> > refl,
 		Reference<Texture<Spectrum> > trans,
-		Reference<Texture<float> > bump)
+		Reference<Texture<Spectrum> > rr,
+		Reference<Texture<Spectrum> > rt,
+		Reference<Texture<float> > bump,
+		string mod)
 		: Kd(kd), Ks(ks), roughness(roughness), reflect(refl),
-	transmit(trans), bumpMap(bump) {
+		transmit(trans), rho_r(rr), rho_t(rt), bumpMap(bump), model(mod) {
 	}
 	BSDF *GetBSDF(const DifferentialGeometry &dgGeom,
 		const DifferentialGeometry &dgShading,
@@ -60,7 +63,9 @@ private:
 	// HairMaterial Private Data
 	Reference<Texture<Spectrum> > Kd, Ks;
 	Reference<Texture<Spectrum> > reflect, transmit;
+	Reference<Texture<Spectrum> > rho_r, rho_t;
 	Reference<Texture<float> > roughness, bumpMap;
+	string model;
 };
 
 

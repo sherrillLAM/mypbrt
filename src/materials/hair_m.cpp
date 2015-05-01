@@ -61,8 +61,16 @@ BSDF *HairMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 	Spectrum kd = Kd->Evaluate(dgs).Clamp();
 	Spectrum ks = Ks->Evaluate(dgs).Clamp();
 	float rough = roughness->Evaluate(dgs);
+	Spectrum rr = rho_r->Evaluate(dgs).Clamp();
+	Spectrum rt = rho_r->Evaluate(dgs).Clamp();
+
 	if (!kd.IsBlack() && !ks.IsBlack()) {
-		if (!r.IsBlack()) bsdf->Add(BSDF_ALLOC(arena, KajiyaKayBSDF)(r * kd, r * ks, rough));
+		if (model == "kk") {
+			if (!r.IsBlack()) bsdf->Add(BSDF_ALLOC(arena, KajiyaKayBSDF)(r * kd, r * ks, rough));
+		}
+		else if (model == "goldman") {
+			if (!r.IsBlack()) bsdf->Add(BSDF_ALLOC(arena, GoldmanBSDF)(r * kd, r * ks, rough, rr, rt));
+		}
 	}
 
 	if (!kd.IsBlack()) {
@@ -94,5 +102,8 @@ HairMaterial *CreateHairMaterial(const Transform &xform,
 	Reference<Texture<Spectrum> > reflect = mp.GetSpectrumTexture("reflect", Spectrum(0.5f));
 	Reference<Texture<Spectrum> > transmit = mp.GetSpectrumTexture("transmit", Spectrum(0.5f));
 	Reference<Texture<float> > bumpMap = mp.GetFloatTextureOrNull("bumpmap");
-	return new HairMaterial(Kd, Ks, roughness, reflect, transmit, bumpMap);
+	string model = mp.FindString("model", "kk");
+	Reference<Texture<Spectrum> > rho_r = mp.GetSpectrumTexture("rho_r", Spectrum(0.5f));
+	Reference<Texture<Spectrum> > rho_t = mp.GetSpectrumTexture("rho_t", Spectrum(0.5f));
+	return new HairMaterial(Kd, Ks, roughness, reflect, transmit, rho_r, rho_t, bumpMap, model);
 }

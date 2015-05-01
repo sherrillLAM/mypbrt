@@ -424,7 +424,7 @@ Reference<Shape> MakeShape(const string &name,
 					Cylinder *c = new Cylinder(o2w, w2o, reverseOrientation, current_r, rel, 360);
 					cylinders.push_back(c);
 					pbrtConcatTransform1(Inverse(*ObjectToWorld));
-					current_r -= 0.05 * radius;
+					current_r -= 0.01 * radius;
 
 				}
 			}
