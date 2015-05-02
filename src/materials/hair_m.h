@@ -49,8 +49,6 @@ public:
 		Reference<Texture<float> > roughness,
 		Reference<Texture<Spectrum> > refl,
 		Reference<Texture<Spectrum> > trans,
-		Reference<Texture<Spectrum> > rr,
-		Reference<Texture<Spectrum> > rt,
 		Reference<Texture<float> > bump,
 		Reference<Texture<float> > k,
 		string mod,
@@ -64,7 +62,7 @@ public:
 		Reference<Texture<float> > bTRT,
 		Reference<Texture<Spectrum> > absorb)
 		: Kd(kd), Ks(ks), roughness(roughness), reflect(refl),
-		transmit(trans), rho_r(rr), rho_t(rt), bumpMap(bump), model(mod), K(k),
+		transmit(trans), bumpMap(bump), model(mod), K(k),
 		refraction(refr), eccentricity(ecc),
 		alphaR(aR), alphaTT(aTT), alphaTRT(aTRT),
 		betaR(bR), betaTT(bTT), betaTRT(bTRT),
@@ -77,7 +75,6 @@ private:
 	// HairMaterial Private Data
 	Reference<Texture<Spectrum> > Kd, Ks;
 	Reference<Texture<Spectrum> > reflect, transmit, absorb;
-	Reference<Texture<Spectrum> > rho_r, rho_t;
 	Reference<Texture<float> > roughness, bumpMap, K,
 							refraction, eccentricity,
 							alphaR, alphaTT, alphaTRT, betaR, betaTT, betaTRT;

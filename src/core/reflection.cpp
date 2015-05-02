@@ -661,7 +661,7 @@ Spectrum KajiyaKayBSDF::f(const Vector &Wo, const Vector &Wi) const {
 
 	float wowiCosTheta = woCosTheta * wiCosTheta + woSinTheta * wiSinTheta;
 	wowiCosTheta = max(0.f, wowiCosTheta);
-	return Kd + Ks * powf(wowiCosTheta, exponent) / wiCosTheta;
+	return (Kd + Ks * powf(wowiCosTheta, exponent) / wiCosTheta).Clamp();
 }
 
 float KajiyaKayBSDF::Pdf(const Vector &wi, const Vector &wo) const {
@@ -679,9 +679,9 @@ Spectrum GoldmanBSDF::f(const Vector &Wo, const Vector &Wi) const {
 	float woCosPhi = CosPhi(wo), wiCosPhi = CosPhi(wi);
 	float woSinPhi = SinPhi(wo), wiSinPhi = SinPhi(wi);
 	float k = max(0.f, woCosPhi * wiCosPhi + woSinPhi * wiSinPhi);
-	Spectrum n_goldman = rho_r * (1 + k) / 2 + rho_t * (1 - k) / 2;
+	Spectrum n_goldman = reflect * (1 + k) / 2 + transmit * (1 - k) / 2;
 
-	return f_kk * n_goldman;
+	return (f_kk * n_goldman).Clamp();
 }
 
 float GoldmanBSDF::Pdf(const Vector &wi, const Vector &wo) const {
@@ -703,9 +703,9 @@ Spectrum KimBSDF::f(const Vector &Wo, const Vector &Wi) const {
 
 	float phi = coshf(wowiCosPhi);
 	float n_t = max(0.f, cos(k * (phi - M_PI)));
-	Spectrum n_kim = rho_r * n_r + rho_t * n_t;
+	Spectrum n_kim = reflect * n_r + transmit * n_t;
 
-	return f_kk * n_kim;
+	return (f_kk * n_kim).Clamp();
 }
 
 float KimBSDF::Pdf(const Vector &wi, const Vector &wo) const {

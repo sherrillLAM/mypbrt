@@ -55,29 +55,28 @@ BSDF *HairMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 	float ior = 1.5f;
 	Spectrum r = reflect->Evaluate(dgs).Clamp();
 	Spectrum t = transmit->Evaluate(dgs).Clamp();
-	if (r.IsBlack() && t.IsBlack()) return bsdf;
+	//if (r.IsBlack() && t.IsBlack()) return bsdf;
 
 	// Evaluate textures for _HairMaterial_ material and allocate BRDF
 
 	Spectrum kd = Kd->Evaluate(dgs).Clamp();
 	Spectrum ks = Ks->Evaluate(dgs).Clamp();
 	float rough = roughness->Evaluate(dgs);
-	Spectrum rr = rho_r->Evaluate(dgs).Clamp();
-	Spectrum rt = rho_r->Evaluate(dgs).Clamp();
 	float k = K->Evaluate(dgs);
 
 	if (!kd.IsBlack() && !ks.IsBlack()) {
 		if (model == "kk") {
-			if (!r.IsBlack()) bsdf->Add(BSDF_ALLOC(arena, KajiyaKayBSDF)(r * kd, r * ks, rough));
+			bsdf->Add(BSDF_ALLOC(arena, KajiyaKayBSDF)(kd, ks, rough));
 		}
 		else if (model == "goldman") {
-			if (!r.IsBlack()) bsdf->Add(BSDF_ALLOC(arena, GoldmanBSDF)(r * kd, r * ks, rough, rr, rt));
+			bsdf->Add(BSDF_ALLOC(arena, GoldmanBSDF)(kd, ks, rough, r, t));
 		}
 		else if (model == "kim") {
-			if (!r.IsBlack()) bsdf->Add(BSDF_ALLOC(arena, KimBSDF)(r * kd, r * ks, rough, rr, rt, k));
+			bsdf->Add(BSDF_ALLOC(arena, KimBSDF)(kd, ks, rough, r, t, k));
 		}
 	}
 
+	/*
 	if (!kd.IsBlack()) {
 		if (!t.IsBlack()) bsdf->Add(BSDF_ALLOC(arena, BRDFToBTDF)(BSDF_ALLOC(arena, Lambertian)(t * kd)));
 	}
@@ -95,7 +94,7 @@ BSDF *HairMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 				BSDF_ALLOC(arena, Blinn)(1.f / rough))));
 		}
 	}
-
+	*/
 	return bsdf;
 }
 
@@ -108,8 +107,6 @@ HairMaterial *CreateHairMaterial(const Transform &xform,
 	Reference<Texture<Spectrum> > transmit = mp.GetSpectrumTexture("transmit", Spectrum(0.5f));
 	Reference<Texture<float> > bumpMap = mp.GetFloatTextureOrNull("bumpmap");
 	string model = mp.FindString("model", "kk");
-	Reference<Texture<Spectrum> > rho_r = mp.GetSpectrumTexture("rho_r", Spectrum(0.5f));
-	Reference<Texture<Spectrum> > rho_t = mp.GetSpectrumTexture("rho_t", Spectrum(0.5f));
 	Reference<Texture<float> > k = mp.GetFloatTexture("k", 0.5f);
 	Reference<Texture<Spectrum> > absorb = mp.GetSpectrumTexture("absorb", Spectrum(0.2f));
 	Reference<Texture<float> > refr = mp.GetFloatTexture("refraction", 1.55f);
@@ -120,6 +117,6 @@ HairMaterial *CreateHairMaterial(const Transform &xform,
 	Reference<Texture<float> > bR = mp.GetFloatTexture("beta", -5.0f);
 	Reference<Texture<float> > bTT = new ConstantTexture<float>(2.0f / bR);
 	Reference<Texture<float> > bTRT = new ConstantTexture<float>(2.0f*bR);
-	return new HairMaterial(Kd, Ks, roughness, reflect, transmit, rho_r, rho_t, bumpMap, k, model,
+	return new HairMaterial(Kd, Ks, roughness, reflect, transmit, bumpMap, k, model,
 		refr, ecc, aR, aTT, aTRT, bR, bTT, bTRT, absorb);
 }
