@@ -678,7 +678,7 @@ Spectrum GoldmanBSDF::f(const Vector &Wo, const Vector &Wi) const {
 
 	float woCosPhi = CosPhi(wo), wiCosPhi = CosPhi(wi);
 	float woSinPhi = SinPhi(wo), wiSinPhi = SinPhi(wi);
-	float k = max(0.f, woCosPhi * wiCosPhi + woSinPhi * wiSinPhi);
+	float k = woCosPhi * wiCosPhi - woSinPhi * wiSinPhi;
 	Spectrum n_goldman = reflect * (1 + k) / 2 + transmit * (1 - k) / 2;
 
 	return (f_kk * n_goldman).Clamp();
@@ -696,13 +696,10 @@ Spectrum KimBSDF::f(const Vector &Wo, const Vector &Wi) const {
 	wowiCosTheta = max(0.f, wowiCosTheta);
 	Spectrum f_kk = Kd + Ks * powf(wowiCosTheta, exponent) / wiCosTheta;
 
-	float woCosPhi = CosPhi(wo), wiCosPhi = CosPhi(wi);
-	float woSinPhi = SinPhi(wo), wiSinPhi = SinPhi(wi);
-	float wowiCosPhi = max(0.f, woCosPhi * wiCosPhi + woSinPhi * wiSinPhi);
-	float n_r = sqrt((wowiCosPhi + 1) / 2);
-
-	float phi = coshf(wowiCosPhi);
-	float n_t = max(0.f, cos(k * (phi - M_PI)));
+	float wiCosPhi = CosPhi(wi);
+	float wiPhi = acos(wiCosPhi);
+	float n_r = cos(wiPhi / 2);
+	float n_t = max(0.f, cos(k * (wiPhi - M_PI)));
 	Spectrum n_kim = reflect * n_r + transmit * n_t;
 
 	return (f_kk * n_kim).Clamp();

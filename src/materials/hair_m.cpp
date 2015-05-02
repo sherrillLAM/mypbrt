@@ -100,6 +100,7 @@ BSDF *HairMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 
 HairMaterial *CreateHairMaterial(const Transform &xform,
 	const TextureParams &mp) {
+	printf("in create hair material...\n");
 	Reference<Texture<Spectrum> > Kd = mp.GetSpectrumTexture("Kd", Spectrum(0.5f));
 	Reference<Texture<Spectrum> > Ks = mp.GetSpectrumTexture("Ks", Spectrum(0.5f));
 	Reference<Texture<float> > roughness = mp.GetFloatTexture("roughness", 0.5f);
