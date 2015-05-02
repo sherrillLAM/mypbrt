@@ -33,8 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 #endif
 
-#ifndef PBRT_MATERIALS_HAIR_H
-#define PBRT_MATERIALS_HAIR_H
+#ifndef PBRT_MATERIALS_HAIR_M_H
+#define PBRT_MATERIALS_HAIR_M_H
 
 // materials/hair.h*
 #include "pbrt.h"
@@ -76,8 +76,8 @@ private:
 	Reference<Texture<Spectrum> > Kd, Ks;
 	Reference<Texture<Spectrum> > reflect, transmit, absorb;
 	Reference<Texture<float> > roughness, bumpMap, K,
-							refraction, eccentricity,
-							alphaR, alphaTT, alphaTRT, betaR, betaTT, betaTRT;
+				refraction, eccentricity,
+				alphaR, alphaTT, alphaTRT, betaR, betaTT, betaTRT;
 	string model;
 };
 

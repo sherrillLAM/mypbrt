@@ -63,6 +63,16 @@ BSDF *HairMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 	Spectrum ks = Ks->Evaluate(dgs).Clamp();
 	float rough = roughness->Evaluate(dgs);
 	float k = K->Evaluate(dgs);
+	// Marschner
+	Spectrum absorbtion = absorb->Evaluate(dgs).Clamp();
+	float refr = refraction->Evaluate(dgs);
+	float ecc = eccentricity->Evaluate(dgs);
+	float aR = alphaR->Evaluate(dgs);
+	float aTT = alphaTT->Evaluate(dgs);
+	float aTRT = alphaTRT->Evaluate(dgs);
+	float bR = betaR->Evaluate(dgs);
+	float bTT = betaTT->Evaluate(dgs);
+	float bTRT = betaTRT->Evaluate(dgs);
 
 	if (!kd.IsBlack() && !ks.IsBlack()) {
 		if (model == "kk") {
@@ -73,6 +83,9 @@ BSDF *HairMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 		}
 		else if (model == "kim") {
 			bsdf->Add(BSDF_ALLOC(arena, KimBSDF)(kd, ks, rough, r, t, k));
+		}
+		else if (model == "marschner") {
+			bsdf->Add(BSDF_ALLOC(arena, MarschnerBSDF)(kd, ks, absorbtion, aR, aTT, aTRT, bR, bTT, bTRT, refr, ecc));
 		}
 	}
 

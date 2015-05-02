@@ -38,6 +38,8 @@
 #include "montecarlo.h"
 #include <stdarg.h>
 #include <math.h>
+#include <boost/random.hpp>
+#include <boost/random/normal_distribution.hpp>
 
 // BxDF Local Definitions
 struct IrregIsoProc {
@@ -699,7 +701,7 @@ Spectrum KimBSDF::f(const Vector &Wo, const Vector &Wi) const {
 	float wiCosPhi = CosPhi(wi);
 	float wiPhi = acos(wiCosPhi);
 	float n_r = cos(wiPhi / 2);
-	float n_t = max(0.f, cos(k * (wiPhi - M_PI)));
+	float n_t = max(0.f, cosf(k * (wiPhi - M_PI)));
 	Spectrum n_kim = reflect * n_r + transmit * n_t;
 
 	return (f_kk * n_kim).Clamp();
@@ -708,3 +710,49 @@ Spectrum KimBSDF::f(const Vector &Wo, const Vector &Wi) const {
 float KimBSDF::Pdf(const Vector &wi, const Vector &wo) const {
 	return 1 / (4 * M_PI);
 }
+
+Spectrum MarschnerBSDF::f(const Vector &Wo, const Vector &Wi) const {
+        Vector wo = Wo, wi = Wi;
+        float woCosTheta = CosTheta(wo), wiCosTheta = CosTheta(wi);
+        float woSinTheta = SinTheta(wo), wiSinTheta = SinTheta(wi);
+
+        Vector wh = Normalize(wi + wo);
+        float cosThetaH = Dot(wi, wh);
+        float ThetaH = acos(cosThetaH); //divide by 2?
+
+        float ThetaR = acos(wo[2]);
+        float ThetaI = acos(wi[2]);
+        float CosThetaD = max(0.f, cosf((ThetaR - ThetaI)/2.0f));
+	float Cos2ThetaD = CosThetaD*CosThetaD;
+
+        float meanR = ThetaH - alphaR;
+        float meanTT = ThetaH - alphaTT;
+        float meanTRT = ThetaH - alphaTRT;
+        boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
+                gaussR(boost::mt19937(time(0)),
+                        boost::normal_distribution<float>(meanR, betaR));
+
+        boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
+                gaussTT(boost::mt19937(time(0)),
+                        boost::normal_distribution<float>(meanTT, betaTT));
+
+        boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
+                gaussTRT(boost::mt19937(time(0)),
+                        boost::normal_distribution<float>(meanTRT, betaTRT));
+
+        float PhiR = atan(wo[2]/wo[1]);
+        float PhiI = atan(wi[2]/wi[1]);
+        float CosPhi = max(0.f, cosf((PhiR - PhiI)/2.0f));
+
+        float MR = gaussR()/Cos2ThetaD;
+        float MTT = gaussTT()/Cos2ThetaD;
+        float MTRT = gaussTRT()/Cos2ThetaD;
+
+        return MR*CosPhi + MTT*CosPhi + MTRT*CosPhi;
+
+}
+
+float MarschnerBSDF::Pdf(const Vector &wi, const Vector &wo) const {
+        return 1 / (4 * M_PI);
+}
+
