@@ -125,12 +125,14 @@ HairMaterial *CreateHairMaterial(const Transform &xform,
 	Reference<Texture<Spectrum> > absorb = mp.GetSpectrumTexture("absorb", Spectrum(0.2f));
 	Reference<Texture<float> > refr = mp.GetFloatTexture("refraction", 1.55f);
 	Reference<Texture<float> > ecc = mp.GetFloatTexture("eccentricity", 0.85f);
-	Reference<Texture<float> > aR = mp.GetFloatTexture("alpha", -5.0f);
-	Reference<Texture<float> > aTT = new ConstantTexture<float>(-aR / 2.0f);
-	Reference<Texture<float> > aTRT = new ConstantTexture<float>(-3.0f*aR / 2.0f);
-	Reference<Texture<float> > bR = mp.GetFloatTexture("beta", -5.0f);
-	Reference<Texture<float> > bTT = new ConstantTexture<float>(2.0f / bR);
-	Reference<Texture<float> > bTRT = new ConstantTexture<float>(2.0f*bR);
+	Reference<Texture<float> > a = mp.GetFloatTexture("alpha", -5.0f);
+	Reference<Texture<float> > aR = new ConstantTexture<float>(a*M_PI/180.0f);
+	Reference<Texture<float> > aTT = new ConstantTexture<float>((-a / 2.0f)*M_PI/180.0f);
+	Reference<Texture<float> > aTRT = new ConstantTexture<float>((-3.0f*a / 2.0f)*M_PI/180.0f);
+	Reference<Texture<float> > b = mp.GetFloatTexture("beta", -5.0f);
+	Reference<Texture<float> > bR = new ConstantTexture<float>(b*M_PI/180.0f);
+	Reference<Texture<float> > bTT = new ConstantTexture<float>((2.0f / b)*M_PI/180.0f);
+	Reference<Texture<float> > bTRT = new ConstantTexture<float>((2.0f*b)*M_PI/180.0f);
 	return new HairMaterial(Kd, Ks, roughness, reflect, transmit, bumpMap, k, model,
 		refr, ecc, aR, aTT, aTRT, bR, bTT, bTRT, absorb);
 }
