@@ -52,9 +52,23 @@ public:
 		Reference<Texture<Spectrum> > rr,
 		Reference<Texture<Spectrum> > rt,
 		Reference<Texture<float> > bump,
-		string mod)
+		Reference<Texture<float> > k,
+		string mod,
+		Reference<Texture<float> > refr,
+		Reference<Texture<float> > ecc,
+		Reference<Texture<float> > aR,
+		Reference<Texture<float> > aTT,
+		Reference<Texture<float> > aTRT,
+		Reference<Texture<float> > bR,
+		Reference<Texture<float> > bTT,
+		Reference<Texture<float> > bTRT,
+		Reference<Texture<Spectrum> > absorb)
 		: Kd(kd), Ks(ks), roughness(roughness), reflect(refl),
-		transmit(trans), rho_r(rr), rho_t(rt), bumpMap(bump), model(mod) {
+		transmit(trans), rho_r(rr), rho_t(rt), bumpMap(bump), model(mod), K(k),
+		refraction(refr), eccentricity(ecc),
+		alphaR(aR), alphaTT(aTT), alphaTRT(aTRT),
+		betaR(bR), betaTT(bTT), betaTRT(bTRT),
+		absorb(absorb) {
 	}
 	BSDF *GetBSDF(const DifferentialGeometry &dgGeom,
 		const DifferentialGeometry &dgShading,
@@ -62,9 +76,11 @@ public:
 private:
 	// HairMaterial Private Data
 	Reference<Texture<Spectrum> > Kd, Ks;
-	Reference<Texture<Spectrum> > reflect, transmit;
+	Reference<Texture<Spectrum> > reflect, transmit, absorb;
 	Reference<Texture<Spectrum> > rho_r, rho_t;
-	Reference<Texture<float> > roughness, bumpMap;
+	Reference<Texture<float> > roughness, bumpMap, K,
+							refraction, eccentricity,
+							alphaR, alphaTT, alphaTRT, betaR, betaTT, betaTRT;
 	string model;
 };
 

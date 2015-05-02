@@ -37,6 +37,7 @@
 #include "sampler.h"
 #include "montecarlo.h"
 #include <stdarg.h>
+#include <math.h>
 
 // BxDF Local Definitions
 struct IrregIsoProc {
@@ -698,10 +699,13 @@ Spectrum KimBSDF::f(const Vector &Wo, const Vector &Wi) const {
 	float woCosPhi = CosPhi(wo), wiCosPhi = CosPhi(wi);
 	float woSinPhi = SinPhi(wo), wiSinPhi = SinPhi(wi);
 	float wowiCosPhi = max(0.f, woCosPhi * wiCosPhi + woSinPhi * wiSinPhi);
-	float half_wowiCosPhi = sqrt((wowiCosPhi + 1) / 2);
-	Spectrum n_goldman = rho_r * (1 + k) / 2 + rho_t * (1 - k) / 2;
+	float n_r = sqrt((wowiCosPhi + 1) / 2);
 
-	return f_kk * n_goldman;
+	float phi = coshf(wowiCosPhi);
+	float n_t = max(0.f, cos(k * (phi - M_PI)));
+	Spectrum n_kim = rho_r * n_r + rho_t * n_t;
+
+	return f_kk * n_kim;
 }
 
 float KimBSDF::Pdf(const Vector &wi, const Vector &wo) const {

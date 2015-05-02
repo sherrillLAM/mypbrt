@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "reflection.h"
 #include "paramset.h"
 #include "texture.h"
+#include "textures/constant.h"
 
 // HairMaterial Method Definitions
 BSDF *HairMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
@@ -63,6 +64,7 @@ BSDF *HairMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 	float rough = roughness->Evaluate(dgs);
 	Spectrum rr = rho_r->Evaluate(dgs).Clamp();
 	Spectrum rt = rho_r->Evaluate(dgs).Clamp();
+	float k = K->Evaluate(dgs);
 
 	if (!kd.IsBlack() && !ks.IsBlack()) {
 		if (model == "kk") {
@@ -70,6 +72,9 @@ BSDF *HairMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 		}
 		else if (model == "goldman") {
 			if (!r.IsBlack()) bsdf->Add(BSDF_ALLOC(arena, GoldmanBSDF)(r * kd, r * ks, rough, rr, rt));
+		}
+		else if (model == "kim") {
+			if (!r.IsBlack()) bsdf->Add(BSDF_ALLOC(arena, KimBSDF)(r * kd, r * ks, rough, rr, rt, k));
 		}
 	}
 
@@ -105,5 +110,16 @@ HairMaterial *CreateHairMaterial(const Transform &xform,
 	string model = mp.FindString("model", "kk");
 	Reference<Texture<Spectrum> > rho_r = mp.GetSpectrumTexture("rho_r", Spectrum(0.5f));
 	Reference<Texture<Spectrum> > rho_t = mp.GetSpectrumTexture("rho_t", Spectrum(0.5f));
-	return new HairMaterial(Kd, Ks, roughness, reflect, transmit, rho_r, rho_t, bumpMap, model);
+	Reference<Texture<float> > k = mp.GetFloatTexture("k", 0.5f);
+	Reference<Texture<Spectrum> > absorb = mp.GetSpectrumTexture("absorb", Spectrum(0.2f));
+	Reference<Texture<float> > refr = mp.GetFloatTexture("refraction", 1.55f);
+	Reference<Texture<float> > ecc = mp.GetFloatTexture("eccentricity", 0.85f);
+	Reference<Texture<float> > aR = mp.GetFloatTexture("alpha", -5.0f);
+	Reference<Texture<float> > aTT = new ConstantTexture<float>(-aR / 2.0f);
+	Reference<Texture<float> > aTRT = new ConstantTexture<float>(-3.0f*aR / 2.0f);
+	Reference<Texture<float> > bR = mp.GetFloatTexture("beta", -5.0f);
+	Reference<Texture<float> > bTT = new ConstantTexture<float>(2.0f / bR);
+	Reference<Texture<float> > bTRT = new ConstantTexture<float>(2.0f*bR);
+	return new HairMaterial(Kd, Ks, roughness, reflect, transmit, rho_r, rho_t, bumpMap, k, model,
+		refr, ecc, aR, aTT, aTRT, bR, bTT, bTRT, absorb);
 }
