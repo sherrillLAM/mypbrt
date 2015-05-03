@@ -545,6 +545,24 @@ private:
 	const Spectrum reflect, transmit; // within[0, 1]
 };
 
+class MarschnerBSDF : public BxDF {
+public:
+	// Marschner Public Methods
+	MarschnerBSDF(const Spectrum &kd, const Spectrum &ks, const Spectrum abs,
+		float aR, float aTT, float aTRT, float bR, float bTT, float bTRT, float refr, float ecc)
+		: BxDF(BxDFType(BSDF_REFLECTION | BSDF_GLOSSY)), Kd(kd), Ks(ks), absorbtion(abs),
+		alphaR(aR), alphaTT(aTT), alphaTRT(aTRT), betaR(bR), betaTT(bTT), betaTRT(bTRT),
+		refraction(refr), eccentricity(ecc) {}
+	Spectrum f(const Vector &wo, const Vector &wi) const;
+	float Pdf(const Vector &wi, const Vector &wo) const;
+private:
+	// Marschner Private Data
+	const Spectrum Kd, Ks, absorbtion;
+	const float alphaR, alphaTT, alphaTRT,
+		betaR, betaTT, betaTRT,
+		refraction, eccentricity;
+};
+
 // BSSRDF Declarations
 class BSSRDF {
 public:

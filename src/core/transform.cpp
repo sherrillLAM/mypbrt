@@ -169,6 +169,12 @@ Transform fromFrame(const Vector &n, const char axis) {
 			);
 		break;
 	case 'y':
+		result = Matrix4x4(
+			s.x, n.x, t.x, 0,
+			s.y, n.y, t.y, 0,
+			s.z, n.z, t.z, 0,
+			0, 0, 0, 1
+			);
 		break;
 	case 'z':
 		result = Matrix4x4(

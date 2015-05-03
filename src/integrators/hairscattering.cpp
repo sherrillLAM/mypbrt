@@ -86,7 +86,7 @@ Spectrum HairScattering::Li(const Scene *scene,
     // Evaluate BSDF at hit point
 	Cylinder* c_shape = (Cylinder*)(isect.dg.shape);
 	Vector tangent = c_shape->GetTangent();
-	Transform t = fromFrame(tangent, 'x');
+	Transform t = fromFrame(tangent, 'y');
 
 	RayDifferential ray(r);
 	ray.d = t(r.d);

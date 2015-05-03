@@ -141,7 +141,7 @@ AttributeBegin
            "color reflect" [0.7 0.7 0.7]
            "color transmit" [0.3 0.3 0.3]
            "float roughness" [4]
-           "string model" "kim"
+           "string model" "marschner"
            "float k" [0.9]
 
   Shape "hair" "float radius" [0.1] 

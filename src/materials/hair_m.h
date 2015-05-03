@@ -33,8 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #pragma once
 #endif
 
-#ifndef PBRT_MATERIALS_HAIR_H
-#define PBRT_MATERIALS_HAIR_H
+#ifndef PBRT_MATERIALS_HAIR_M_H
+#define PBRT_MATERIALS_HAIR_M_H
 
 // materials/hair.h*
 #include "pbrt.h"
@@ -85,4 +85,4 @@ private:
 HairMaterial *CreateHairMaterial(const Transform &xform,
 	const TextureParams &mp);
 
-#endif // PBRT_MATERIALS_HAIR_H
+#endif // PBRT_MATERIALS_HAIR_M_H
