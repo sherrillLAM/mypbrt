@@ -744,8 +744,8 @@ Spectrum MarschnerBSDF::f(const Vector &Wo, const Vector &Wi) const {
 		gaussTRT(boost::mt19937(time(0)),
 		boost::normal_distribution<float>(meanTRT, betaTRT));
 
-	float PhiR = atan(wo[2] / wo[1]);
-	float PhiI = atan(wi[2] / wi[1]);
+	float PhiR = atan(wo[2] / wo[0]);
+	float PhiI = atan(wi[2] / wi[0]);
 	float CosPhi = max(0.f, cosf((PhiR - PhiI) / 2.0f));
 
 	float MR = gaussR() / Cos2ThetaD;
