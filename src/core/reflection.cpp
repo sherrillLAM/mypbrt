@@ -40,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <math.h>
 #include <boost/random.hpp>
 #include <boost/random/normal_distribution.hpp>
+#include "marschner.h"
 
 // BxDF Local Definitions
 struct IrregIsoProc {
