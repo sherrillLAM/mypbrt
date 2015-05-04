@@ -340,7 +340,7 @@ Spectrum ieMarschnerNP(  Spectrum absorption,  Vector lightVec, const float p,  
 			Spectrum finalAbsorption = ieMarschnerA( absorption, lightVec, p, gammaI, refraction, etaPerp, etaParal );
 			float dexitAngle;
 			dexitAngle = ieMarschnerDExitAnglePolynomial( p, etaPerp, h );
-			float denom = max( denomMin, 2*abs( dexitAngle ) );
+			float denom = fmax( denomMin, 2*abs( dexitAngle ) );
 			result += (finalAbsorption / denom);
 		}
 	}
@@ -359,7 +359,7 @@ Spectrum ieMarschnerNTRT(Spectrum absorption, Vector lightVec, float refraction,
 		float gammac = sqrt((6 * 2 * c / M_PI - 2) / (3 * 8 * (2 * c / pi3)));
 		hc = abs(sin(gammac));
 		ddexitAngle = ieMarschnerDDExitAnglePolynomial( 2, etaPerp, hc );
-		dH = min( causticLimit, 2*sqrt( 2*causticWidth/abs( ddexitAngle ) ) );
+		dH = fmin( causticLimit, 2*sqrt( 2*causticWidth/abs( ddexitAngle ) ) );
 		t = 1;
 	}
 	else
@@ -393,4 +393,22 @@ Spectrum ieMarschnerNTRT(Spectrum absorption, Vector lightVec, float refraction,
 	result *= 1 - t*causticRight()/causticCenter();
 	result += glintAbsorption*t*glintScale*dH*(causticLeft() + causticRight());
 	return result;
+}
+
+float ieGaussian(float a, float b, float c, float x) {
+	float o = x - b;
+	return a * expf(-o*o / (2*c*c));
+}
+
+void ieGaussianPDF(float mu, float sigma, float &a, float &b, float &c) {
+	a = 1/(sigma*sqrt(2*M_PI));
+	b = mu;
+	c = sigma;
+}
+
+float ieMarschnerM(float alpha, float beta, float normWidth, float x) {
+	float a, b, c;
+	float norm = 1/((normWidth/180.0f*M_PI)*sqrt(2*M_PI));
+	ieGaussianPDF(alpha, beta, a, b, c);
+	return (ieGaussian(a, b, c , x) / a) * norm;
 }

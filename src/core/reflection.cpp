@@ -748,12 +748,39 @@ Spectrum MarschnerBSDF::f(const Vector &Wo, const Vector &Wi) const {
 	float PhiI = atan(wi[2] / wi[0]);
 	float CosPhi = max(0.f, cosf((PhiR - PhiI) / 2.0f));
 
+/*
 	float MR = gaussR() / Cos2ThetaD;
 	float MTT = gaussTT() / Cos2ThetaD;
 	float MTRT = gaussTRT() / Cos2ThetaD;
+*/
 
-	return MR*CosPhi + MTT*CosPhi + MTRT*CosPhi;
+//------------------------------------------------------
+	float averageTheta = (wo[1] + wi[1]) / 2.0f;
+	float rWidth = 5;
+	float MR = ieMarschnerM( alphaR, betaR, rWidth, averageTheta);
+	float MTT = ieMarschnerM( alphaTT, betaTT, rWidth/2, averageTheta);
+	float MTRT = ieMarschnerM( alphaTRT, betaTRT, rWidth*2, averageTheta);
 
+//------------------------------------------------------
+	float relativeTheta = fabs(wo[2]-wi[2])/2.0f;
+	float etaPerp = ieBravaisIndex( relativeTheta, refraction);
+	float etaParal = (refraction*refraction)/etaPerp;
+	float glintScale = 0.5; 
+	float causticWidth = 10.0 / 180.0f * M_PI;
+	float causticLimit = 0.5;
+	float causticFade = 0.2;
+	float relativeAzimuth = fmod(abs(wo[0]-wi[0]),2*M_PI);
+//	float relativeAzimuth = fabs((PhiR-PhiI)/2.0f);// CosPhi;
+	float targetAngleR = ieMarschnerTargetAngle(0, relativeAzimuth);	
+	float targetAngleTT = ieMarschnerTargetAngle(1, relativeAzimuth);	
+	float targetAngleTRT = ieMarschnerTargetAngle(2, relativeAzimuth);	
+	Spectrum NR = ieMarschnerNP(absorbtion, wi, 0, refraction, etaPerp, etaParal, targetAngleR );
+	Spectrum NTT = ieMarschnerNP(absorbtion, wi, 1, refraction, etaPerp, etaParal, targetAngleTT );
+	Spectrum NTRT = ieMarschnerNTRT(absorbtion, wi, refraction, etaPerp, etaParal, targetAngleTRT,
+				causticLimit, causticWidth, glintScale, causticFade );
+		
+
+	return Kd + (MR*NR + MTT*NTT + MTRT*NTRT);
 }
 
 float MarschnerBSDF::Pdf(const Vector &wi, const Vector &wo) const {
