@@ -724,8 +724,8 @@ Spectrum MarschnerBSDF::f(const Vector &Wo, const Vector &Wi) const {
 	float cosThetaH = Dot(wi, wh);
 	float ThetaH = acos(cosThetaH); //divide by 2?
 
-	float ThetaR = acos(wo[2]);
-	float ThetaI = acos(wi[2]);
+	float ThetaR = acos(Clamp(wo[2], -1.f, 1.f));
+	float ThetaI = acos(Clamp(wi[2], -1.f, 1.f));
 	float CosThetaD = max(0.f, cosf((ThetaR - ThetaI) / 2.0f));
 	float Cos2ThetaD = CosThetaD*CosThetaD;
 
@@ -748,18 +748,16 @@ Spectrum MarschnerBSDF::f(const Vector &Wo, const Vector &Wi) const {
 	float PhiI = atan(wi[2] / wi[0]);
 	float CosPhi = max(0.f, cosf((PhiR - PhiI) / 2.0f));
 
-/*
 	float MR = gaussR() / Cos2ThetaD;
 	float MTT = gaussTT() / Cos2ThetaD;
 	float MTRT = gaussTRT() / Cos2ThetaD;
-*/
 
 //------------------------------------------------------
 	float averageTheta = (wo[1] + wi[1]) / 2.0f;
 	float rWidth = 5;
-	float MR = ieMarschnerM( alphaR, betaR, rWidth, averageTheta);
-	float MTT = ieMarschnerM( alphaTT, betaTT, rWidth/2, averageTheta);
-	float MTRT = ieMarschnerM( alphaTRT, betaTRT, rWidth*2, averageTheta);
+	//float MR = ieMarschnerM( alphaR, betaR, rWidth, averageTheta);
+	//float MTT = ieMarschnerM( alphaTT, betaTT, rWidth/2, averageTheta);
+	//float MTRT = ieMarschnerM( alphaTRT, betaTRT, rWidth*2, averageTheta);
 
 //------------------------------------------------------
 	float relativeTheta = fabs(wo[2]-wi[2])/2.0f;

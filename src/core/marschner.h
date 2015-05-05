@@ -280,7 +280,7 @@ Spectrum ieMarschnerA(Spectrum absorption, Vector lightVec, const float p, float
 	float l;
 	// equation 20 in [2]
 	l = 2*cos(gammaT)/fmax(1e-5,cosTheta);
-	float *rgb;
+	float rgb[3];
 	absorption.ToRGB(rgb);
 	Spectrum segmentAbsorption = Exp(absorption * l*p*-1.f);
 	//Spectrum segmentAbsorption = Spectrum(expf(rgb[0] * l*p*-1.f), expf(rgb[1] * l*p*-1.f), expf(rgb[2] * l*p*-1.f));
