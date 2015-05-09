@@ -87,6 +87,9 @@ BSDF *HairMaterial::GetBSDF(const DifferentialGeometry &dgGeom,
 		else if (model == "marschner") {
 			bsdf->Add(BSDF_ALLOC(arena, MarschnerBSDF)(kd, ks, absorbtion, aR, aTT, aTRT, bR, bTT, bTRT, refr, ecc));
 		}
+		else if (model == "zinke") {
+			bsdf->Add(BSDF_ALLOC(arena, ZinkeBSDF)(kd, ks, absorbtion, aR, aTT, aTRT, bR, bTT, bTRT, refr, ecc));
+		}
 	}
 
 	/*

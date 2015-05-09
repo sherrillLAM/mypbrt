@@ -778,9 +778,115 @@ Spectrum MarschnerBSDF::f(const Vector &Wo, const Vector &Wi) const {
 				causticLimit, causticWidth, glintScale, causticFade );
 		
 
-	return Kd + (MR*NR + MTT*NTT + MTRT*NTRT);
+	return (Kd + (MR*NR + MTT*NTT + MTRT*NTRT)).Clamp();
 }
 
 float MarschnerBSDF::Pdf(const Vector &wi, const Vector &wo) const {
+	return 1 / (4 * M_PI);
+}
+
+Spectrum ZinkeBSDF::f(const Vector &Wo, const Vector &Wi) const {
+	Vector wo = Wo, wi = Wi;
+	float woSinTheta = wo.y, wiSinTheta = wi.y;
+	float woCosTheta = sqrt(1.f - woSinTheta*woSinTheta);
+	float wiCosTheta = sqrt(1.f - wiSinTheta*wiSinTheta);
+
+	Vector wh = Normalize(wi + wo);
+	float cosThetaH = Dot(wi, wh);
+	float ThetaH = acos(cosThetaH); //divide by 2?
+
+	float ThetaR = acos(Clamp(wo[2], -1.f, 1.f));
+	float ThetaI = acos(Clamp(wi[2], -1.f, 1.f));
+	float CosThetaD = max(0.f, cosf((ThetaR - ThetaI) / 2.0f));
+	float Cos2ThetaD = CosThetaD*CosThetaD;
+
+	float meanR = ThetaH - alphaR;
+	float meanTT = ThetaH - alphaTT;
+	float meanTRT = ThetaH - alphaTRT;
+	boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
+		gaussR(boost::mt19937(time(0)),
+		boost::normal_distribution<float>(meanR, betaR));
+
+	boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
+		gaussTT(boost::mt19937(time(0)),
+		boost::normal_distribution<float>(meanTT, betaTT));
+
+	boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
+		gaussTRT(boost::mt19937(time(0)),
+		boost::normal_distribution<float>(meanTRT, betaTRT));
+
+	float PhiR = atan(wo[2] / wo[0]);
+	float PhiI = atan(wi[2] / wi[0]);
+	float CosPhi = max(0.f, cosf((PhiR - PhiI) / 2.0f));
+
+	float MR = gaussR() / Cos2ThetaD;
+	float MTT = gaussTT() / Cos2ThetaD;
+	float MTRT = gaussTRT() / Cos2ThetaD;
+
+	//------------------------------------------------------
+	float averageTheta = (wo[1] + wi[1]) / 2.0f;
+	float rWidth = 5;
+	//float MR = ieMarschnerM( alphaR, betaR, rWidth, averageTheta);
+	//float MTT = ieMarschnerM( alphaTT, betaTT, rWidth/2, averageTheta);
+	//float MTRT = ieMarschnerM( alphaTRT, betaTRT, rWidth*2, averageTheta);
+
+	//------------------------------------------------------
+	float relativeTheta = fabs(wo[2] - wi[2]) / 2.0f;
+	float etaPerp = ieBravaisIndex(relativeTheta, refraction);
+	float etaParal = (refraction*refraction) / etaPerp;
+	float glintScale = 0.5;
+	float causticWidth = 10.0 / 180.0f * M_PI;
+	float causticLimit = 0.5;
+	float causticFade = 0.2;
+	float relativeAzimuth = fmod(abs(wo[0] - wi[0]), 2 * M_PI);
+	//	float relativeAzimuth = fabs((PhiR-PhiI)/2.0f);// CosPhi;
+	float targetAngleR = ieMarschnerTargetAngle(0, relativeAzimuth);
+	float targetAngleTT = ieMarschnerTargetAngle(1, relativeAzimuth);
+	float targetAngleTRT = ieMarschnerTargetAngle(2, relativeAzimuth);
+	Spectrum NR = ieMarschnerNP(absorbtion, wi, 0, refraction, etaPerp, etaParal, targetAngleR);
+	Spectrum NTT = ieMarschnerNP(absorbtion, wi, 1, refraction, etaPerp, etaParal, targetAngleTT);
+	Spectrum NTRT = ieMarschnerNTRT(absorbtion, wi, refraction, etaPerp, etaParal, targetAngleTRT,
+		causticLimit, causticWidth, glintScale, causticFade);
+
+	//--------------------------------------------------------
+	float cosThetaT = Clamp(etaPerp * wiCosTheta / refraction, -0.999f, 0.999f);
+	float thetaT = acos(cosThetaT);
+
+	float h;
+	if (etaPerp < 2) {
+		float c = asin(1 / etaPerp);
+		const float pi3 = M_PI*M_PI*M_PI;
+		float gammac = sqrt((6 * 2 * c / M_PI - 2) / (3 * 8 * (2 * c / pi3)));
+		h = abs(sin(gammac));
+	}
+	else {
+		h = 0;
+	}
+	float cosGammaT = sqrt(1.f - h * h);
+	float l = 2 * 0.1f * cosGammaT / cos(thetaT);
+	float STT = l * tan(thetaT);
+	float STRT = 2 * l * tan(thetaT);
+	float delta_s = abs(wo.x - wi.x);
+
+	boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
+		sigmaR(boost::mt19937(time(0)),
+		boost::normal_distribution<float>(delta_s, 0));
+
+	boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
+		sigmaTT(boost::mt19937(time(0)),
+		boost::normal_distribution<float>(delta_s + STT, 0));
+
+	boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
+		sigmaTRT(boost::mt19937(time(0)),
+		boost::normal_distribution<float>(delta_s + STRT, 0));
+
+	MR *= sigmaR();
+	MTT *= sigmaTT();
+	MTRT *= sigmaTRT();
+
+	return (Kd + (MR*NR + MTT*NTT + MTRT*NTRT)).Clamp();
+}
+
+float ZinkeBSDF::Pdf(const Vector &wi, const Vector &wo) const {
 	return 1 / (4 * M_PI);
 }
