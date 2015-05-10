@@ -866,23 +866,33 @@ Spectrum ZinkeBSDF::f(const Vector &Wo, const Vector &Wi) const {
 	float l = 2 * 0.1f * cosGammaT / cos(thetaT);
 	float STT = l * tan(thetaT);
 	float STRT = 2 * l * tan(thetaT);
-	float delta_s = abs(wo.x - wi.x);
+	float delta_s = abs(wo.y - wi.y);
+	float hi = wi.x;
+	float hr = wo.x;
 
 	boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
-		sigmaR(boost::mt19937(time(0)),
+		DeltaR(boost::mt19937(time(0)),
 		boost::normal_distribution<float>(delta_s, 0));
 
 	boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
-		sigmaTT(boost::mt19937(time(0)),
+		DeltaTT(boost::mt19937(time(0)),
 		boost::normal_distribution<float>(delta_s + STT, 0));
 
 	boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
-		sigmaTRT(boost::mt19937(time(0)),
+		DeltaTRT(boost::mt19937(time(0)),
 		boost::normal_distribution<float>(delta_s + STRT, 0));
 
-	MR *= sigmaR();
-	MTT *= sigmaTT();
-	MTRT *= sigmaTRT();
+	boost::variate_generator<boost::mt19937, boost::normal_distribution<float> >
+		DeltaH(boost::mt19937(time(0)),
+		boost::normal_distribution<float>(hi + hr, 0));
+
+	MR *= DeltaR();
+	MTT *= DeltaTT();
+	MTRT *= DeltaTRT();
+
+	NR *= DeltaH();
+	NTT *= DeltaH();
+	NTRT *= DeltaH();
 
 	return (Kd + (MR*NR + MTT*NTT + MTRT*NTRT)).Clamp();
 }
